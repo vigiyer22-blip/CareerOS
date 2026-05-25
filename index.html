@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>CareerOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F6F4EF;--surface:#FFFFFF;--surface2:#F0EDE6;
+  --border:#E2DDD5;--border-strong:#C8C2B8;
+  --text:#1C1A16;--text-muted:#6B6760;--text-faint:#A8A49C;
+  --ink:#1C1A16;--sage:#3D6B5A;--sage-light:#EBF2EE;
+  --amber:#8C5A1A;--amber-light:#F7EFE0;
+  --slate:#2A4A6B;--slate-light:#E8EEF5;
+  --rose:#7A2D3E;--rose-light:#F5EAED;
+  --radius:8px;--radius-lg:14px;--radius-xl:20px;
+  --nav-h:64px;--topbar-h:52px;
+}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+
+/* ── SCREENS ── */
+.screen{display:none;height:100%;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ════════════════════════════════
+   AUTH SCREENS (choose/pw/create)
+════════════════════════════════ */
+.auth-screen{
+  align-items:center;justify-content:center;
+  padding:1.5rem;background:var(--bg);overflow-y:auto;
+}
+.auth-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-xl);padding:32px 28px;
+  width:100%;max-width:420px;
+}
+.brand-center{text-align:center;margin-bottom:36px;}
+.wordmark-lg{font-family:'Fraunces',serif;font-size:30px;font-weight:300;letter-spacing:-1px;color:var(--text);margin-bottom:4px;}
+.wordmark-lg em{font-style:italic;}
+.brand-sub{font-size:12px;color:var(--text-faint);letter-spacing:0.3px;}
+.section-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px;}
+.profile-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.profile-pill{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:13px 14px;
+  cursor:pointer;transition:all 0.13s;
+  border-left:3px solid transparent;
+}
+.profile-pill:hover,.profile-pill:active{border-left-color:var(--ink);background:var(--surface2);}
+.p-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-size:15px;color:var(--text);flex-shrink:0;
+}
+.p-info h3{font-size:14px;font-weight:500;margin-bottom:1px;}
+.p-info p{font-size:11px;color:var(--text-faint);}
+.p-lock{margin-left:auto;font-size:13px;color:var(--text-faint);}
+.divider-or{display:flex;align-items:center;gap:10px;margin:14px 0;}
+.divider-or hr{flex:1;border:none;border-top:1px solid var(--border);}
+.divider-or span{font-size:11px;color:var(--text-faint);}
+.btn-new{
+  width:100%;padding:13px;border:1px dashed var(--border-strong);
+  border-radius:var(--radius-lg);background:transparent;
+  font-size:13px;font-weight:500;color:var(--text-muted);
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all 0.13s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-new:hover,.btn-new:active{background:var(--surface2);border-color:var(--ink);color:var(--text);}
+.empty-profiles{text-align:center;padding:24px 16px;color:var(--text-faint);font-size:13px;line-height:1.7;}
+
+/* password screen */
+.pw-wrap{text-align:center;}
+.pw-avatar-lg{width:56px;height:56px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:22px;color:var(--text);margin:0 auto 12px;}
+.pw-name{font-family:'Fraunces',serif;font-size:20px;font-weight:400;letter-spacing:-0.4px;margin-bottom:4px;}
+.pw-sub{font-size:13px;color:var(--text-muted);margin-bottom:20px;}
+.pw-error{font-size:12px;color:var(--rose);min-height:16px;margin-bottom:8px;}
+
+/* form elements */
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:5px;}
+.fg input,.fg textarea,.fg select{
+  width:100%;padding:11px 13px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-size:15px;font-family:'DM Sans',sans-serif;
+  background:var(--bg);color:var(--text);outline:none;
+  transition:border-color 0.12s;-webkit-appearance:none;
+}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--border-strong);background:white;}
+.fg input.err{border-color:var(--rose);}
+.fg textarea{resize:vertical;min-height:90px;line-height:1.6;font-size:14px;}
+.fg textarea.tall{min-height:140px;}
+.fg textarea.xtall{min-height:200px;}
+.fg .hint{font-size:11px;color:var(--text-faint);margin-top:4px;}
+.opt{font-size:10px;color:var(--text-faint);font-weight:400;margin-left:3px;}
+.form-err{font-size:12px;color:var(--rose);min-height:16px;margin-bottom:10px;}
+
+/* buttons */
+.btn{padding:11px 18px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-ink{background:var(--ink);color:white;}
+.btn-ink:hover,.btn-ink:active{opacity:0.82;}
+.btn-ghost{background:transparent;border-color:var(--border);color:var(--text-muted);}
+.btn-ghost:hover,.btn-ghost:active{background:var(--surface2);color:var(--text);}
+.btn-full{width:100%;}
+.btn-sm{padding:7px 13px;font-size:12px;}
+.btn-back{background:none;border:none;font-size:13px;color:var(--text-faint);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:10px;display:block;width:100%;text-align:center;}
+.btn-back:hover{color:var(--text-muted);}
+
+/* ════════════════════════════════
+   APP SCREEN
+════════════════════════════════ */
+#screen-app{flex-direction:column;height:100%;}
+
+/* TOP BAR (mobile) */
+.topbar{
+  display:none;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 16px;height:var(--topbar-h);
+  align-items:center;justify-content:space-between;
+  flex-shrink:0;position:relative;z-index:10;
+}
+.topbar-wordmark{font-family:'Fraunces',serif;font-size:18px;font-weight:300;letter-spacing:-0.5px;}
+.topbar-wordmark em{font-style:italic;}
+.topbar-profile{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.topbar-chip{width:30px;height:30px;border-radius:50%;background:var(--ink);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;}
+.topbar-name{font-size:13px;font-weight:500;color:var(--text-muted);}
+
+/* APP BODY */
+.app-body{
+  display:flex;flex:1;overflow:hidden;
+}
+
+/* SIDEBAR (desktop) */
+.sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.sidebar-top{padding:20px 16px 14px;}
+.wordmark{font-family:'Fraunces',serif;font-size:18px;font-weight:300;letter-spacing:-0.3px;color:var(--text);}
+.wordmark em{font-style:italic;}
+.profile-chip{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:7px 9px;margin-top:10px;
+  cursor:pointer;transition:all 0.12s;
+}
+.profile-chip:hover{border-color:var(--border-strong);}
+.chip-av{width:24px;height:24px;border-radius:50%;background:var(--ink);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.chip-name{font-size:12px;font-weight:500;color:var(--text);flex:1;}
+.chip-out{font-size:10px;color:var(--text-faint);}
+.sdiv{height:1px;background:var(--border);margin:10px 16px;}
+.snav{padding:0 10px;margin-bottom:6px;}
+.snav-label{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-faint);padding:0 8px;margin-bottom:4px;}
+.nitem{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 9px;border-radius:var(--radius);
+  font-size:13px;font-weight:500;color:var(--text-muted);
+  cursor:pointer;border:none;background:none;
+  width:100%;text-align:left;transition:all 0.12s;
+  font-family:'DM Sans',sans-serif;
+}
+.nitem:hover{background:var(--surface2);color:var(--text);}
+.nitem.active{background:var(--ink);color:white;}
+.nitem svg{width:14px;height:14px;flex-shrink:0;opacity:0.6;}
+.nitem.active svg{opacity:0.8;}
+.nbadge{margin-left:auto;background:var(--sage);color:white;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:600;}
+.sidebar-foot{margin-top:auto;padding:14px 16px;border-top:1px solid var(--border);}
+.api-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-muted);margin-bottom:8px;}
+.sdot{width:6px;height:6px;border-radius:50%;background:#ccc;flex-shrink:0;}
+.sdot.on{background:var(--sage);}
+.api-input{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;margin-bottom:6px;}
+.api-input:focus{border-color:var(--border-strong);}
+.btn-api{width:100%;padding:7px;background:var(--ink);color:white;border:none;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-api:hover{opacity:0.82;}
+
+/* MAIN SCROLL AREA */
+.main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.page{display:none;padding:28px 24px 100px;}
+.page.active{display:block;}
+
+/* BOTTOM NAV (mobile only) */
+.bottom-nav{
+  display:none;
+  background:var(--surface);border-top:1px solid var(--border);
+  height:var(--nav-h);flex-shrink:0;
+  align-items:stretch;
+  position:relative;z-index:10;
+}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  border:none;background:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  color:var(--text-faint);transition:color 0.12s;
+  padding:8px 4px;
+  -webkit-tap-highlight-color:transparent;
+}
+.bn-item.active{color:var(--ink);}
+.bn-item svg{width:20px;height:20px;}
+.bn-label{font-size:9px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;}
+.bn-badge{
+  position:absolute;top:8px;right:calc(50% - 18px);
+  background:var(--sage);color:white;
+  font-size:9px;padding:1px 5px;border-radius:10px;font-weight:600;
+}
+
+/* MOBILE API PANEL (shown in settings page on mobile) */
+.mobile-api-panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px;margin-bottom:16px;
+}
+.mobile-api-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+
+/* ════════════════════════════════
+   PAGE COMPONENTS
+════════════════════════════════ */
+.page-hd{margin-bottom:24px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;margin-bottom:12px;font-family:'DM Sans',sans-serif;padding:0;}
+.back-btn:hover{color:var(--text);}
+.page-title{font-family:'Fraunces',serif;font-size:26px;font-weight:300;letter-spacing:-0.7px;margin-bottom:4px;}
+.page-title em{font-style:italic;}
+.page-sub{font-size:13px;color:var(--text-muted);line-height:1.6;}
+
+/* DASHBOARD */
+.dash-greet{font-family:'Fraunces',serif;font-size:28px;font-weight:300;letter-spacing:-0.8px;line-height:1.2;margin-bottom:6px;}
+.dash-greet em{font-style:italic;}
+.dash-sub{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:24px;}
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.tool-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px 16px;
+  cursor:pointer;transition:all 0.15s;
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border);}
+.tool-card:active{transform:scale(0.98);}
+.tool-card.sage::before{background:var(--sage);}
+.tool-card.amber::before{background:var(--amber);}
+.tool-card.slate::before{background:var(--slate);}
+.tool-card.rose::before{background:var(--rose);}
+.tool-card.ink::before{background:var(--ink);}
+.tool-num{font-size:9px;font-weight:600;letter-spacing:1px;color:var(--text-faint);margin-bottom:8px;}
+.tool-name{font-family:'Fraunces',serif;font-size:14px;font-weight:400;letter-spacing:-0.2px;margin-bottom:4px;line-height:1.3;}
+.tool-desc{font-size:11px;color:var(--text-muted);line-height:1.5;display:none;}
+.tool-arrow{position:absolute;bottom:14px;right:14px;font-size:14px;color:var(--border-strong);}
+
+/* TOOL PANELS */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;}
+.panel-title{font-size:11px;font-weight:600;letter-spacing:0.5px;color:var(--text-muted);text-transform:uppercase;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--border);}
+.run-btn{
+  width:100%;padding:13px;background:var(--ink);color:white;
+  border:none;border-radius:var(--radius);font-size:14px;font-weight:500;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:opacity 0.15s;margin-top:6px;
+  -webkit-tap-highlight-color:transparent;
+}
+.run-btn:active{opacity:0.82;}
+.run-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.out-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;min-height:180px;}
+.out-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px;color:var(--text-faint);font-size:13px;text-align:center;gap:8px;}
+.out-icon{font-size:24px;opacity:0.3;}
+.out-content{font-size:13px;line-height:1.8;color:var(--text);}
+.out-content h3{font-family:'Fraunces',serif;font-weight:400;font-size:15px;margin:14px 0 6px;letter-spacing:-0.2px;}
+.out-content h3:first-child{margin-top:0;}
+.out-content p{margin-bottom:8px;color:var(--text-muted);}
+.out-content strong{color:var(--text);font-weight:600;}
+.out-content ul{padding-left:16px;margin-bottom:8px;}
+.out-content ul li{margin-bottom:3px;color:var(--text-muted);}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px;gap:10px;}
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-txt{font-size:13px;color:var(--text-muted);}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:14px;}
+.copy-btn:active{background:var(--surface2);}
+
+/* PROFILE PAGE */
+.saved-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--sage);background:var(--sage-light);padding:2px 7px;border-radius:10px;margin-left:8px;font-weight:500;}
+
+/* TRACKER */
+.tracker-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.tracker-hd h2{font-family:'Fraunces',serif;font-size:22px;font-weight:400;letter-spacing:-0.5px;}
+.kanban-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;margin:0 -24px;padding-left:24px;}
+.kanban{display:flex;gap:12px;min-width:max-content;padding-right:24px;}
+.kcol{width:200px;flex-shrink:0;}
+.kcol-hd{font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.kcnt{font-size:9px;background:var(--surface2);border:1px solid var(--border);padding:1px 5px;border-radius:8px;color:var(--text-muted);}
+.kcards{display:flex;flex-direction:column;gap:8px;min-height:50px;}
+.kcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px;cursor:pointer;}
+.kcard:active{background:var(--surface2);}
+.kcard-co{font-size:12px;font-weight:500;margin-bottom:2px;}
+.kcard-role{font-size:11px;color:var(--text-muted);}
+.kcard-date{font-size:10px;color:var(--text-faint);margin-top:5px;}
+.kdot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:4px;}
+.add-card{width:100%;padding:8px;border:1px dashed var(--border);border-radius:var(--radius);background:transparent;font-size:11px;color:var(--text-faint);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;}
+.add-card:active{background:var(--surface2);}
+
+/* SETTINGS PAGE */
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:14px;}
+.settings-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;padding-bottom:0;}
+.settings-row-label{font-size:13px;color:var(--text);}
+.settings-row-val{font-size:12px;color:var(--text-muted);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(28,26,22,0.55);z-index:300;align-items:flex-end;justify-content:center;padding:0;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:24px 20px 32px;width:100%;max-width:500px;position:relative;max-height:90vh;overflow-y:auto;}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
+.modal h3{font-family:'Fraunces',serif;font-size:18px;font-weight:400;letter-spacing:-0.3px;margin-bottom:14px;}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:var(--text-faint);font-size:20px;line-height:1;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:white;padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;opacity:0;transition:all 0.25s;z-index:999;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ════════════════════════════════
+   RESPONSIVE
+════════════════════════════════ */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .topbar{display:flex;}
+  .bottom-nav{display:flex;}
+  .page{padding:20px 16px 90px;}
+  .tools-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .tool-desc{display:none;}
+  .modal-overlay{align-items:flex-end;}
+  .modal{border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding-bottom:calc(32px + env(safe-area-inset-bottom));}
+  .toast{bottom:calc(var(--nav-h) + 12px);}
+  .dash-greet{font-size:24px;}
+  .page-title{font-size:22px;}
+}
+@media(min-width:769px){
+  .topbar{display:none;}
+  .bottom-nav{display:none;}
+  .sidebar{display:flex;}
+  .tool-desc{display:block;}
+  .tools-grid{grid-template-columns:1fr 1fr;gap:14px;}
+  .modal-overlay{align-items:center;padding:1rem;}
+  .modal{border-radius:var(--radius-xl);padding:28px 24px;max-width:440px;}
+  .modal-handle{display:none;}
+  .toast{bottom:24px;}
+  .page{padding:36px 40px 60px;}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.auth-card{animation:fadeUp 0.28s ease;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN: CHOOSE PROFILE
+══════════════════════════════════════ -->
+<div class="screen auth-screen active" id="screen-choose">
+  <div class="auth-card">
+    <div class="brand-center">
+      <div class="wordmark-lg">career<em>OS</em></div>
+      <div class="brand-sub">Your personal job search toolkit</div>
+    </div>
+    <div class="section-label">Who's searching today?</div>
+    <div class="profile-list" id="profile-list"></div>
+    <div class="divider-or"><hr/><span>or</span><hr/></div>
+    <button class="btn-new" onclick="showScreen('create')">
+      <span style="font-size:16px">+</span> Create new profile
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: PASSWORD
+══════════════════════════════════════ -->
+<div class="screen auth-screen" id="screen-password">
+  <div class="auth-card">
+    <div class="pw-wrap">
+      <div class="pw-avatar-lg" id="pw-av">?</div>
+      <div class="pw-name" id="pw-name">Profile</div>
+      <div class="pw-sub">Enter your password to continue</div>
+      <div class="pw-error" id="pw-err"></div>
+      <div class="fg">
+        <input type="password" id="pw-input" placeholder="••••••••" style="text-align:center;letter-spacing:3px;" onkeydown="if(event.key==='Enter')unlockProfile()"/>
+      </div>
+      <button class="btn btn-ink btn-full" onclick="unlockProfile()">Unlock →</button>
+      <button class="btn-back" onclick="showScreen('choose')">← Back to profiles</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: CREATE PROFILE
+══════════════════════════════════════ -->
+<div class="screen auth-screen" id="screen-create">
+  <div class="auth-card">
+    <h2 style="font-family:'Fraunces',serif;font-size:22px;font-weight:400;letter-spacing:-0.5px;margin-bottom:4px;">Create your profile</h2>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.6;">Private and password-protected. Only you can access it.</p>
+    <div class="fg"><label>Your name</label><input type="text" id="c-name" placeholder="e.g. Riya"/></div>
+    <div class="fg">
+      <label>Username <span style="font-size:10px;color:var(--text-faint);font-weight:400">(shown on profile screen)</span></label>
+      <input type="text" id="c-username" placeholder="e.g. riya_s" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,'')"/>
+      <div class="hint">Lowercase letters, numbers, underscores only</div>
+    </div>
+    <div class="fg"><label>Password</label><input type="password" id="c-pw" placeholder="Min. 6 characters"/></div>
+    <div class="fg"><label>Confirm password</label><input type="password" id="c-pw2" placeholder="Repeat password"/></div>
+    <div class="form-err" id="c-err"></div>
+    <button class="btn btn-ink btn-full" onclick="createProfile()">Create my workspace →</button>
+    <button class="btn-back" onclick="showScreen('choose')">← Back to profiles</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: APP
+══════════════════════════════════════ -->
+<div class="screen" id="screen-app">
+
+  <!-- TOP BAR (mobile) -->
+  <div class="topbar">
+    <div class="wordmark-lg" style="font-size:18px;">career<em>OS</em></div>
+    <div class="topbar-profile" onclick="confirmLogout()">
+      <div class="topbar-chip" id="tb-av">R</div>
+      <div class="topbar-name" id="tb-name">Profile</div>
+    </div>
+  </div>
+
+  <!-- APP BODY -->
+  <div class="app-body">
+
+    <!-- SIDEBAR (desktop) -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="wordmark">career<em>OS</em></div>
+        <div class="profile-chip" onclick="confirmLogout()">
+          <div class="chip-av" id="sb-av">R</div>
+          <div class="chip-name" id="sb-name">Profile</div>
+          <div class="chip-out">sign out →</div>
+        </div>
+      </div>
+      <div class="sdiv"></div>
+      <div class="snav">
+        <div class="snav-label">Overview</div>
+        <button class="nitem active" onclick="showPage('dashboard')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          Dashboard
+        </button>
+        <button class="nitem" onclick="showPage('tracker')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h5"/></svg>
+          Tracker
+          <span class="nbadge" id="sb-badge">0</span>
+        </button>
+        <button class="nitem" onclick="showPage('profile')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+          My Profile
+        </button>
+      </div>
+      <div class="sdiv"></div>
+      <div class="snav">
+        <div class="snav-label">Tools</div>
+        <button class="nitem" onclick="showPage('role-finder')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M10.5 10.5L14 14"/></svg>
+          Role Finder
+        </button>
+        <button class="nitem" onclick="showPage('narrative')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12M2 6h8M2 9h10M2 12h6"/></svg>
+          Narrative Checker
+        </button>
+        <button class="nitem" onclick="showPage('warm-path')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="3" cy="8" r="2"/><circle cx="13" cy="4" r="2"/><circle cx="13" cy="12" r="2"/><path d="M5 8h3m0 0l3-3m-3 3l3 3"/></svg>
+          Warm Path Mapper
+        </button>
+        <button class="nitem" onclick="showPage('outreach')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l6 5 6-5"/><rect x="1" y="3" width="14" height="10" rx="1.5"/></svg>
+          Outreach Composer
+        </button>
+        <button class="nitem" onclick="showPage('cv-tailor')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M5 6h6M5 9h4"/></svg>
+          CV Tailorer
+        </button>
+      </div>
+      <div class="sidebar-foot">
+        <div class="api-row">
+          <div class="sdot" id="sb-dot"></div>
+          <span id="sb-status">API key not set</span>
+        </div>
+        <input class="api-input" type="password" id="sb-key" placeholder="Paste Anthropic API key..."/>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-api" style="flex:1;" onclick="saveApiKey()">Connect</button>
+          <button class="btn-api" id="sb-disconnect" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-muted);display:none;" onclick="disconnectApiKey()">Disconnect</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="dash-greet">Your search,<br><em>organised.</em></div>
+        <div class="dash-sub">Five focused tools to find the right roles, reach the right people, and put your best foot forward.</div>
+        <div class="tools-grid">
+          <div class="tool-card sage" onclick="showPage('role-finder')">
+            <div class="tool-num">01</div>
+            <div class="tool-name">Role Finder</div>
+            <div class="tool-desc" style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;">Is this role worth pursuing?</div>
+            <div class="tool-arrow">↗</div>
+          </div>
+          <div class="tool-card amber" onclick="showPage('narrative')">
+            <div class="tool-num">02</div>
+            <div class="tool-name">Narrative Checker</div>
+            <div class="tool-desc" style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;">Does your story hold together?</div>
+            <div class="tool-arrow">↗</div>
+          </div>
+          <div class="tool-card slate" onclick="showPage('warm-path')">
+            <div class="tool-num">03</div>
+            <div class="tool-name">Warm Path Mapper</div>
+            <div class="tool-desc" style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;">Who's your best route in?</div>
+            <div class="tool-arrow">↗</div>
+          </div>
+          <div class="tool-card rose" onclick="showPage('outreach')">
+            <div class="tool-num">04</div>
+            <div class="tool-name">Outreach Composer</div>
+            <div class="tool-desc" style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;">Say the right thing.</div>
+            <div class="tool-arrow">↗</div>
+          </div>
+          <div class="tool-card ink" onclick="showPage('cv-tailor')">
+            <div class="tool-num">05</div>
+            <div class="tool-name">CV Tailorer</div>
+            <div class="tool-desc" style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;">Tweak your CV per role.</div>
+            <div class="tool-arrow">↗</div>
+          </div>
+          <div class="tool-card" onclick="showPage('tracker')" style="background:var(--surface2);">
+            <div class="tool-num">06</div>
+            <div class="tool-name">Tracker</div>
+            <div class="tool-desc" style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;">Everything in one place.</div>
+            <div class="tool-arrow">↗</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRACKER -->
+      <div class="page" id="page-tracker">
+        <div class="tracker-hd">
+          <h2>Tracker</h2>
+          <button class="btn btn-ink btn-sm" onclick="openAddModal()">+ Add</button>
+        </div>
+        <div class="kanban-scroll">
+          <div class="kanban">
+            <div class="kcol">
+              <div class="kcol-hd">Researching <span class="kcnt" id="cnt-0">0</span></div>
+              <div class="kcards" id="col-0"></div>
+              <button class="add-card" onclick="openAddModal('Researching')">+ Add</button>
+            </div>
+            <div class="kcol">
+              <div class="kcol-hd">Applied <span class="kcnt" id="cnt-1">0</span></div>
+              <div class="kcards" id="col-1"></div>
+              <button class="add-card" onclick="openAddModal('Applied')">+ Add</button>
+            </div>
+            <div class="kcol">
+              <div class="kcol-hd">Outreach Sent <span class="kcnt" id="cnt-2">0</span></div>
+              <div class="kcards" id="col-2"></div>
+              <button class="add-card" onclick="openAddModal('Outreach Sent')">+ Add</button>
+            </div>
+            <div class="kcol">
+              <div class="kcol-hd">Interviewing <span class="kcnt" id="cnt-3">0</span></div>
+              <div class="kcards" id="col-3"></div>
+              <button class="add-card" onclick="openAddModal('Interviewing')">+ Add</button>
+            </div>
+            <div class="kcol">
+              <div class="kcol-hd">Closed <span class="kcnt" id="cnt-4">0</span></div>
+              <div class="kcards" id="col-4"></div>
+              <button class="add-card" onclick="openAddModal('Closed')">+ Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="page" id="page-profile">
+        <div class="page-hd">
+          <div class="page-title">My <em>Profile</em></div>
+          <div class="page-sub">Save your background once. Every tool reads from this automatically.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">About you <span class="saved-badge" id="prof-saved" style="display:none">✓ Saved</span></div>
+          <div class="fg"><label>Current role & company</label><input type="text" id="p-role" placeholder="e.g. Corp Comms Executive at Tata Communications"/></div>
+          <div class="fg"><label>Experience</label><input type="text" id="p-exp" placeholder="e.g. 10 months full-time + 2 years freelance"/></div>
+          <div class="fg"><label>Target roles</label><input type="text" id="p-targets" placeholder="e.g. Corp Comms Manager, Brand Manager"/></div>
+          <div class="fg"><label>Target industries <span class="opt">(optional)</span></label><input type="text" id="p-industries" placeholder="e.g. FMCG, Tech, Media"/></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Your CV</div>
+          <div class="fg"><label>Paste your full CV text</label><textarea class="xtall" id="p-cv" placeholder="Paste your CV here. The more detail, the better every tool's output."></textarea></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">LinkedIn & positioning <span class="opt">(optional)</span></div>
+          <div class="fg"><label>LinkedIn About section</label><textarea id="p-linkedin" placeholder="Paste your LinkedIn summary..."></textarea></div>
+          <div class="fg"><label>Your personal brand in 1–2 sentences</label><textarea id="p-brand" placeholder="e.g. Strategic communicator who builds brand credibility during organisational change..."></textarea></div>
+        </div>
+        <button class="btn btn-ink" onclick="saveProfile()" style="padding:12px 28px;font-size:14px;">Save profile</button>
+      </div>
+
+      <!-- ROLE FINDER -->
+      <div class="page" id="page-role-finder">
+        <div class="page-hd">
+          <button class="back-btn" onclick="showPage('dashboard')">← Back</button>
+          <div class="page-title">Role <em>Finder</em></div>
+          <div class="page-sub">Paste a JD and get a relevance score + honest gap analysis.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Input</div>
+          <div class="fg"><label>Job description</label><textarea class="xtall" id="rf-jd" placeholder="Paste the full job description here..."></textarea></div>
+          <div class="fg"><label>Specific concern? <span class="opt">(optional)</span></label><input type="text" id="rf-notes" placeholder="e.g. Worried about the 3yr experience requirement"/></div>
+          <button class="run-btn" id="rf-btn" onclick="runRoleFinder()">Assess this role</button>
+        </div>
+        <div class="out-panel">
+          <div class="panel-title">Analysis</div>
+          <div id="rf-out"><div class="out-empty"><div class="out-icon">◎</div><div>Paste a JD and hit Assess</div></div></div>
+        </div>
+      </div>
+
+      <!-- NARRATIVE CHECKER -->
+      <div class="page" id="page-narrative">
+        <div class="page-hd">
+          <button class="back-btn" onclick="showPage('dashboard')">← Back</button>
+          <div class="page-title">Narrative <em>Checker</em></div>
+          <div class="page-sub">Check your CV, LinkedIn, and cover letter tell one coherent story.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Your materials</div>
+          <div class="fg"><label>CV text <span class="opt">(auto-filled from profile)</span></label><textarea class="tall" id="nc-cv" placeholder="Your CV text..."></textarea></div>
+          <div class="fg"><label>LinkedIn About</label><textarea id="nc-li" placeholder="Your LinkedIn summary..."></textarea></div>
+          <div class="fg"><label>Cover letter <span class="opt">(any recent one)</span></label><textarea id="nc-cl" placeholder="Paste a recent cover letter..."></textarea></div>
+          <div class="fg"><label>Target role</label><input type="text" id="nc-target" placeholder="e.g. Senior Corp Comms Manager at a mid-to-large Indian brand"/></div>
+          <button class="run-btn" id="nc-btn" onclick="runNarrative()">Check my narrative</button>
+        </div>
+        <div class="out-panel">
+          <div class="panel-title">Consistency Report</div>
+          <div id="nc-out"><div class="out-empty"><div class="out-icon">◑</div><div>Fill in your materials above and run the check</div></div></div>
+        </div>
+      </div>
+
+      <!-- WARM PATH MAPPER -->
+      <div class="page" id="page-warm-path">
+        <div class="page-hd">
+          <button class="back-btn" onclick="showPage('dashboard')">← Back</button>
+          <div class="page-title">Warm Path <em>Mapper</em></div>
+          <div class="page-sub">Map the warmest route in, get the outreach drafted, and a 30-day plan.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Target details</div>
+          <div class="fg"><label>Target company</label><input type="text" id="wp-co" placeholder="e.g. Hindustan Unilever"/></div>
+          <div class="fg"><label>Target contact name & role</label><input type="text" id="wp-contact" placeholder="e.g. Priya Mehta, Head of Corporate Communications"/></div>
+          <div class="fg"><label>Role you're targeting here</label><input type="text" id="wp-role" placeholder="e.g. Corporate Communications Manager"/></div>
+          <div class="fg"><label>Connections or context you've spotted</label><textarea id="wp-ctx" placeholder="e.g. College batchmate Rohan works in their marketing team. Target contact spoke at PRCI last year."></textarea></div>
+          <div class="fg"><label>Why this company?</label><textarea id="wp-why" placeholder="What draws you — culture, sector, their work?"></textarea></div>
+          <button class="run-btn" id="wp-btn" onclick="runWarmPath()">Map my path in</button>
+        </div>
+        <div class="out-panel">
+          <div class="panel-title">Strategy + 30-Day Plan</div>
+          <div id="wp-out"><div class="out-empty"><div class="out-icon">◈</div><div>Fill in the target details to map your path</div></div></div>
+        </div>
+      </div>
+
+      <!-- OUTREACH COMPOSER -->
+      <div class="page" id="page-outreach">
+        <div class="page-hd">
+          <button class="back-btn" onclick="showPage('dashboard')">← Back</button>
+          <div class="page-title">Outreach <em>Composer</em></div>
+          <div class="page-sub">Draft messages that sound like you — not a template.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Message details</div>
+          <div class="fg"><label>Type of message</label>
+            <select id="oc-type">
+              <option>Cold email</option>
+              <option>LinkedIn connection note</option>
+              <option>LinkedIn InMail</option>
+              <option>Follow-up after applying</option>
+              <option>Warm introduction request (to a mutual)</option>
+              <option>Thank you / post-interview note</option>
+            </select>
+          </div>
+          <div class="fg"><label>Recipient name & role</label><input type="text" id="oc-to" placeholder="e.g. Anjali Sharma, VP of Brand, Marico"/></div>
+          <div class="fg"><label>Context about them</label><textarea id="oc-ctx" placeholder="e.g. She spoke at Ad Asia on brand purpose. Passionate about narrative-driven marketing."></textarea></div>
+          <div class="fg"><label>Your goal</label><input type="text" id="oc-goal" placeholder="e.g. Get a 20-min call / introduce myself before a role opens"/></div>
+          <div class="fg"><label>Tone <span class="opt">(optional)</span></label><input type="text" id="oc-tone" placeholder="e.g. Warm but professional"/></div>
+          <button class="run-btn" id="oc-btn" onclick="runOutreach()">Draft my message</button>
+        </div>
+        <div class="out-panel">
+          <div class="panel-title">Your draft</div>
+          <div id="oc-out"><div class="out-empty"><div class="out-icon">✉</div><div>Fill in the details to draft your message</div></div></div>
+        </div>
+      </div>
+
+      <!-- CV TAILORER -->
+      <div class="page" id="page-cv-tailor">
+        <div class="page-hd">
+          <button class="back-btn" onclick="showPage('dashboard')">← Back</button>
+          <div class="page-title">CV <em>Tailorer</em></div>
+          <div class="page-sub">Surgical tweaks — not a full rewrite. Targeted suggestions per role.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Input</div>
+          <div class="fg"><label>Job description</label><textarea class="tall" id="ct-jd" placeholder="Paste the job description..."></textarea></div>
+          <div class="fg"><label>Your CV <span class="opt">(auto-filled from profile)</span></label><textarea class="tall" id="ct-cv" placeholder="Your CV text..."></textarea></div>
+          <div class="fg"><label>Anything to emphasise or downplay? <span class="opt">(optional)</span></label><input type="text" id="ct-notes" placeholder="e.g. Want to lead with the HUL project"/></div>
+          <button class="run-btn" id="ct-btn" onclick="runCVTailor()">Get tailoring suggestions</button>
+        </div>
+        <div class="out-panel">
+          <div class="panel-title">Suggestions</div>
+          <div id="ct-out"><div class="out-empty"><div class="out-icon">◻</div><div>Paste JD and CV to get suggestions</div></div></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS (mobile only) -->
+      <div class="page" id="page-settings">
+        <div class="page-hd">
+          <div class="page-title">Settings</div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">API Connection</div>
+          <div class="api-row" style="margin-bottom:10px;">
+            <div class="sdot" id="mob-dot"></div>
+            <span id="mob-status">API key not set</span>
+          </div>
+          <div class="fg"><label>Anthropic API key</label><input type="password" id="mob-key" placeholder="Paste your API key here..."/></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ink btn-full" onclick="saveApiKeyMobile()">Connect</button>
+            <button class="btn btn-ghost btn-full" id="mob-disconnect" style="display:none;" onclick="disconnectApiKey()">Disconnect</button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Account</div>
+          <div class="settings-row">
+            <div class="settings-row-label">Signed in as</div>
+            <div class="settings-row-val" id="mob-profile-name">—</div>
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn btn-ghost btn-full" onclick="confirmLogout()">Sign out</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav">
+    <button class="bn-item active" id="bn-dashboard" onclick="showPage('dashboard');setBottomNav('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="bn-label">Home</span>
+    </button>
+    <button class="bn-item" id="bn-tracker" onclick="showPage('tracker');setBottomNav('tracker')" style="position:relative;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h12M3 18h8"/></svg>
+      <span class="bn-label">Tracker</span>
+      <span class="bn-badge" id="mob-badge" style="display:none">0</span>
+    </button>
+    <button class="bn-item" id="bn-profile" onclick="showPage('profile');setBottomNav('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+      <span class="bn-label">Profile</span>
+    </button>
+    <button class="bn-item" id="bn-settings" onclick="showPage('settings');setBottomNav('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      <span class="bn-label">Settings</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ADD APPLICATION MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeAddModal()">×</button>
+    <h3>Add application</h3>
+    <div class="fg"><label>Company</label><input type="text" id="m-co" placeholder="e.g. Hindustan Unilever"/></div>
+    <div class="fg"><label>Role</label><input type="text" id="m-role" placeholder="e.g. Corporate Communications Manager"/></div>
+    <div class="fg"><label>Stage</label>
+      <select id="m-stage">
+        <option>Researching</option><option>Applied</option>
+        <option>Outreach Sent</option><option>Interviewing</option><option>Closed</option>
+      </select>
+    </div>
+    <div class="fg"><label>Notes <span class="opt">(optional)</span></label><input type="text" id="m-notes" placeholder="e.g. Applied via LinkedIn"/></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-ink btn-sm" onclick="addApp()">Add</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════
+//  PROFILE SYSTEM
+// ══════════════════════════════════════
+const PK = 'careeros_profiles';
+let currentId = null;
+
+function getProfiles(){ return JSON.parse(localStorage.getItem(PK)||'[]'); }
+function saveProfiles(p){ localStorage.setItem(PK,JSON.stringify(p)); }
+function hash(pw){ let h=0; for(let i=0;i<pw.length;i++) h=(Math.imul(31,h)+pw.charCodeAt(i))|0; return h.toString(36); }
+function pkey(k){ return `cos_${currentId}_${k}`; }
+function pget(k){ return JSON.parse(localStorage.getItem(pkey(k))||'null'); }
+function pset(k,v){ localStorage.setItem(pkey(k),JSON.stringify(v)); }
+
+// ── SCREENS ──
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  if(id==='choose') renderProfiles();
+}
+
+// ── CHOOSE ──
+function renderProfiles(){
+  const ps = getProfiles();
+  const el = document.getElementById('profile-list');
+  if(!ps.length){
+    el.innerHTML='<div class="empty-profiles">No profiles yet.<br>Create one to get started.</div>';
+    return;
+  }
+  el.innerHTML = ps.map(p=>`
+    <div class="profile-pill" onclick="selectProfile('${p.id}')">
+      <div class="p-avatar">${p.name.charAt(0).toUpperCase()}</div>
+      <div class="p-info"><h3>${p.name}</h3><p>@${p.username}</p></div>
+      <div class="p-lock">🔒</div>
+    </div>`).join('');
+}
+
+function selectProfile(id){
+  const p = getProfiles().find(x=>x.id===id);
+  if(!p) return;
+  currentId = id;
+  document.getElementById('pw-av').textContent = p.name.charAt(0).toUpperCase();
+  document.getElementById('pw-name').textContent = p.name;
+  document.getElementById('pw-input').value='';
+  document.getElementById('pw-err').textContent='';
+  document.getElementById('pw-input').classList.remove('err');
+  showScreen('password');
+  setTimeout(()=>document.getElementById('pw-input').focus(),300);
+}
+
+// ── PASSWORD ──
+function unlockProfile(){
+  const p = getProfiles().find(x=>x.id===currentId);
+  const inp = document.getElementById('pw-input');
+  const err = document.getElementById('pw-err');
+  if(hash(inp.value)===p.passwordHash){
+    inp.classList.remove('err'); err.textContent='';
+    enterApp(p);
+  } else {
+    inp.classList.add('err');
+    err.textContent='Incorrect password. Try again.';
+    inp.value=''; inp.focus();
+  }
+}
+
+// ── CREATE ──
+function createProfile(){
+  const name=document.getElementById('c-name').value.trim();
+  const uname=document.getElementById('c-username').value.trim();
+  const pw=document.getElementById('c-pw').value;
+  const pw2=document.getElementById('c-pw2').value;
+  const err=document.getElementById('c-err');
+  err.textContent='';
+  if(!name){err.textContent='Please enter your name.';return;}
+  if(!uname||uname.length<2){err.textContent='Username must be at least 2 characters.';return;}
+  if(pw.length<6){err.textContent='Password must be at least 6 characters.';return;}
+  if(pw!==pw2){err.textContent='Passwords do not match.';return;}
+  const ps=getProfiles();
+  if(ps.find(p=>p.username===uname)){err.textContent='Username already taken.';return;}
+  const np={id:'p_'+Date.now(),name,username:uname,passwordHash:hash(pw),createdAt:new Date().toISOString()};
+  ps.push(np); saveProfiles(ps);
+  currentId=np.id;
+  ['c-name','c-username','c-pw','c-pw2'].forEach(id=>document.getElementById(id).value='');
+  err.textContent='';
+  enterApp(np);
+}
+
+// ── ENTER APP ──
+function enterApp(p){
+  // update all name/avatar spots
+  ['sb-av','tb-av'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=p.name.charAt(0).toUpperCase(); });
+  ['sb-name','tb-name','mob-profile-name'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=p.name; });
+  // load api key
+  const k=pget('api_key');
+  if(k){ apiKey=k; document.getElementById('sb-key').value=k; document.getElementById('mob-key').value=k; updateApiUI(true); }
+  else { apiKey=''; updateApiUI(false); }
+  loadProfileForms();
+  renderKanban();
+  showPage('dashboard');
+  setBottomNav('dashboard');
+  showScreen('app');
+}
+
+function confirmLogout(){
+  if(confirm('Sign out of this profile?')){ currentId=null; apiKey=''; updateApiUI(false); showScreen('choose'); }
+}
+
+// ══════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  // highlight sidebar nav
+  document.querySelectorAll('.nitem').forEach(n=>{
+    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+  });
+  // auto-fill cv fields
+  const prof=pget('profile')||{};
+  if(id==='narrative'){ if(prof.cv&&!document.getElementById('nc-cv').value) document.getElementById('nc-cv').value=prof.cv; if(prof.linkedin&&!document.getElementById('nc-li').value) document.getElementById('nc-li').value=prof.linkedin; }
+  if(id==='cv-tailor'){ if(prof.cv&&!document.getElementById('ct-cv').value) document.getElementById('ct-cv').value=prof.cv; }
+  // scroll to top
+  document.querySelector('.main').scrollTo(0,0);
+}
+
+function setBottomNav(id){
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('bn-'+id);
+  if(el) el.classList.add('active');
+}
+
+// ══════════════════════════════════════
+//  API KEY
+// ══════════════════════════════════════
+let apiKey='';
+function saveApiKey(){
+  const v=document.getElementById('sb-key').value.trim();
+  if(!v){showToast('Please paste your API key');return;}
+  apiKey=v; pset('api_key',v);
+  document.getElementById('mob-key').value=v;
+  updateApiUI(true); showToast('API key connected ✓');
+}
+function saveApiKeyMobile(){
+  const v=document.getElementById('mob-key').value.trim();
+  if(!v){showToast('Please paste your API key');return;}
+  apiKey=v; pset('api_key',v);
+  document.getElementById('sb-key').value=v;
+  updateApiUI(true); showToast('API key connected ✓');
+}
+function updateApiUI(on){
+  ['sb-dot','mob-dot'].forEach(id=>{ const el=document.getElementById(id); if(el){ el.className='sdot'+(on?' on':''); }});
+  ['sb-status','mob-status'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=on?'API connected':'API key not set'; });
+  const sbd=document.getElementById('sb-disconnect'); if(sbd) sbd.style.display=on?'block':'none';
+  const mobd=document.getElementById('mob-disconnect'); if(mobd) mobd.style.display=on?'flex':'none';
+}
+function disconnectApiKey(){
+  if(!confirm('Disconnect API key? The tools will stop working until you reconnect.')) return;
+  apiKey='';
+  pset('api_key',null);
+  document.getElementById('sb-key').value='';
+  document.getElementById('mob-key').value='';
+  updateApiUI(false);
+  showToast('API key disconnected');
+}
+
+// ══════════════════════════════════════
+//  PROFILE FORMS
+// ══════════════════════════════════════
+function saveProfile(){
+  const prof={
+    role:document.getElementById('p-role').value,
+    exp:document.getElementById('p-exp').value,
+    targets:document.getElementById('p-targets').value,
+    industries:document.getElementById('p-industries').value,
+    cv:document.getElementById('p-cv').value,
+    linkedin:document.getElementById('p-linkedin').value,
+    brand:document.getElementById('p-brand').value,
+  };
+  pset('profile',prof);
+  document.getElementById('prof-saved').style.display='inline-flex';
+  showToast('Profile saved ✓');
+}
+function loadProfileForms(){
+  const prof=pget('profile');
+  if(!prof) return;
+  ['role','exp','targets','industries','cv','linkedin','brand'].forEach(f=>{ const el=document.getElementById('p-'+f); if(el&&prof[f]) el.value=prof[f]; });
+  if(Object.values(prof).some(v=>v)) document.getElementById('prof-saved').style.display='inline-flex';
+}
+function profileCtx(){
+  const prof=pget('profile')||{};
+  if(!prof.cv) return 'No profile saved — ask user to fill in their profile first.';
+  return `Current role: ${prof.role||'Not specified'}
+Experience: ${prof.exp||'Not specified'}
+Target roles: ${prof.targets||'Not specified'}
+Target industries: ${prof.industries||'Not specified'}
+Personal brand: ${prof.brand||'Not specified'}
+LinkedIn: ${prof.linkedin||'Not provided'}
+CV:\n${prof.cv}`;
+}
+
+// ══════════════════════════════════════
+//  CLAUDE API
+// ══════════════════════════════════════
+async function callClaude(sys,user,outId,btnId,loadMsg){
+  if(!apiKey){showToast('Please connect your API key first');return;}
+  const btn=document.getElementById(btnId);
+  const out=document.getElementById(outId);
+  btn.disabled=true;
+  out.innerHTML=`<div class="loading"><div class="spinner"></div><div class="loading-txt">${loadMsg}</div></div>`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:user}]})
+    });
+    const data=await res.json();
+    if(data.error) throw new Error(data.error.message);
+    out.innerHTML=`<div class="out-content">${fmt(data.content[0].text)}</div><button class="copy-btn" onclick="copyOut('${outId}')">⎘ Copy</button>`;
+  }catch(e){
+    out.innerHTML=`<div class="out-empty"><div>Error: ${e.message}</div></div>`;
+    showToast('Check your API key and try again');
+  }
+  btn.disabled=false;
+}
+
+function fmt(t){
+  return t
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^#{1,3} (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^[-•*] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .replace(/\n\n+/g,'</p><p>')
+    .replace(/^(?!<)/gm,'')
+    .replace(/<p>(<[hu])/g,'$1')
+    .replace(/<p>\s*<\/p>/g,'');
+}
+function copyOut(id){
+  const t=document.getElementById(id).querySelector('.out-content')?.innerText||'';
+  navigator.clipboard.writeText(t).then(()=>showToast('Copied ✓'));
+}
+
+// ══════════════════════════════════════
+//  TOOLS
+// ══════════════════════════════════════
+function runRoleFinder(){
+  const jd=document.getElementById('rf-jd').value.trim();
+  const notes=document.getElementById('rf-notes').value.trim();
+  if(!jd){showToast('Please paste a job description');return;}
+  callClaude(
+    `You are a career advisor for marketing and corporate communications roles in India. Assess job fit honestly and directly.
+
+Structure your response:
+## Relevance Score
+X/10 — one sentence explanation.
+## Why This Could Work
+2-3 specific reasons this role aligns with their background.
+## Honest Gaps
+2-3 gaps or concerns. Be direct.
+## Should They Apply?
+Clear verdict: Yes / Yes with caveats / Probably not — one paragraph rationale.
+## What to emphasise in the application
+3-4 specific bullet points.
+Under 400 words. Be direct, not generic.`,
+    `CANDIDATE PROFILE:\n${profileCtx()}\n\nJOB DESCRIPTION:\n${jd}${notes?'\n\nSPECIFIC CONCERN: '+notes:''}`,
+    'rf-out','rf-btn','Assessing role fit...'
+  );
+}
+
+function runNarrative(){
+  const cv=document.getElementById('nc-cv').value.trim();
+  const li=document.getElementById('nc-li').value.trim();
+  const cl=document.getElementById('nc-cl').value.trim();
+  const target=document.getElementById('nc-target').value.trim();
+  if(!cv){showToast('Please paste your CV text');return;}
+  callClaude(
+    `You are a personal branding expert for early-career marketing and communications professionals in India.
+
+## Overall Narrative Score
+X/10 — one sentence on consistency.
+## What's Working
+2-3 consistent, strong elements.
+## Inconsistencies Found
+Be specific. Quote conflicting parts where possible.
+## Your Current Narrative
+One paragraph — what story these materials tell as a recruiter would read it.
+## Recommended Narrative
+What the story SHOULD be for the target role, and why.
+## Specific Changes to Make
+Concrete, actionable list per document.
+Under 500 words.`,
+    `TARGET ROLE: ${target||'Not specified'}\n\nCV:\n${cv}\n\nLINKEDIN:\n${li||'Not provided'}\n\nCOVER LETTER:\n${cl||'Not provided'}`,
+    'nc-out','nc-btn','Checking narrative consistency...'
+  );
+}
+
+function runWarmPath(){
+  const co=document.getElementById('wp-co').value.trim();
+  const contact=document.getElementById('wp-contact').value.trim();
+  const role=document.getElementById('wp-role').value.trim();
+  const ctx=document.getElementById('wp-ctx').value.trim();
+  const why=document.getElementById('wp-why').value.trim();
+  if(!co||!contact){showToast('Please fill in company and contact');return;}
+  callClaude(
+    `You are a networking strategist for early-career marketing and communications professionals in India.
+
+## Path Assessment
+Rate warmth: Cold / Lukewarm / Warm / Hot. One sentence why.
+## Recommended Approach
+Step-by-step: who to contact first, what to say, in what order.
+## Draft Outreach Message
+Write the actual message — to the bridge person if warm path exists, or directly to the target. Human and specific, not templated.
+## 30-Day Visibility Plan
+Week-by-week:
+- Week 1: [specific actions]
+- Week 2: [specific actions]
+- Week 3: [specific actions]
+- Week 4: [specific actions]
+Under 600 words. Specific and actionable.`,
+    `CANDIDATE PROFILE:\n${profileCtx()}\n\nTARGET COMPANY: ${co}\nTARGET CONTACT: ${contact}\nTARGET ROLE: ${role}\nCONNECTIONS/CONTEXT: ${ctx||'None'}\nWHY THIS COMPANY: ${why||'Not specified'}`,
+    'wp-out','wp-btn','Mapping your path in...'
+  );
+}
+
+function runOutreach(){
+  const type=document.getElementById('oc-type').value;
+  const to=document.getElementById('oc-to').value.trim();
+  const ctx=document.getElementById('oc-ctx').value.trim();
+  const goal=document.getElementById('oc-goal').value.trim();
+  const tone=document.getElementById('oc-tone').value.trim();
+  if(!to){showToast('Please fill in the recipient');return;}
+  callClaude(
+    `You are a communications expert helping an early-career corp comms professional in India craft outreach that feels genuine and human — not templated.
+
+Write the message directly. No preamble. Just the message.
+
+Then add:
+## Why this works
+2-3 sentences on specific choices and why they'll land.
+## Subject line
+One option (if email).
+
+Rules: sound like a real person, reference specific details, under 150 words for the message, end with a clear low-pressure ask.`,
+    `CANDIDATE PROFILE:\n${profileCtx()}\n\nMESSAGE TYPE: ${type}\nRECIPIENT: ${to}\nCONTEXT: ${ctx||'None'}\nGOAL: ${goal||'Not specified'}\nTONE: ${tone||'Warm, professional'}`,
+    'oc-out','oc-btn','Drafting your message...'
+  );
+}
+
+function runCVTailor(){
+  const jd=document.getElementById('ct-jd').value.trim();
+  const cv=document.getElementById('ct-cv').value.trim();
+  const notes=document.getElementById('ct-notes').value.trim();
+  if(!jd||!cv){showToast('Please paste both the JD and your CV');return;}
+  callClaude(
+    `You are a CV specialist for marketing and corporate communications professionals in India. Give surgical, specific suggestions to reframe existing CV content for a specific role. Not a rewrite — targeted tweaks only.
+
+## Top 3 reframes
+For each:
+- **Current:** [quote existing bullet/line]
+- **Suggested:** [rewritten version]
+- **Why:** one sentence
+## What to lead with
+Which experience/achievement should be most prominent and why.
+## What to downplay or cut
+1-2 things not relevant here.
+## One thing they're not saying that they should
+Something implicitly relevant but not stated.
+Under 450 words. Quote the actual CV where possible.`,
+    `JOB DESCRIPTION:\n${jd}\n\nCURRENT CV:\n${cv}${notes?'\n\nEMPHASIS NOTES: '+notes:''}`,
+    'ct-out','ct-btn','Generating tailoring suggestions...'
+  );
+}
+
+// ══════════════════════════════════════
+//  TRACKER
+// ══════════════════════════════════════
+const stageMap={'Researching':0,'Applied':1,'Outreach Sent':2,'Interviewing':3,'Closed':4};
+const stageDots=['#A8A49C','#3D6B5A','#2A4A6B','#8C5A1A','#C8C2B8'];
+
+function renderKanban(){
+  for(let i=0;i<5;i++){ document.getElementById('col-'+i).innerHTML=''; document.getElementById('cnt-'+i).textContent='0'; }
+  const apps=pget('apps')||[];
+  apps.forEach(app=>{
+    const c=stageMap[app.stage]||0;
+    const el=document.createElement('div');
+    el.className='kcard';
+    el.innerHTML=`<div class="kcard-co"><span class="kdot" style="background:${stageDots[c]}"></span>${app.company}</div><div class="kcard-role">${app.role}</div><div class="kcard-date">${app.date}${app.notes?' · '+app.notes:''}</div>`;
+    document.getElementById('col-'+c).appendChild(el);
+    const cnt=document.getElementById('cnt-'+c);
+    cnt.textContent=parseInt(cnt.textContent)+1;
+  });
+  const total=apps.length;
+  // update badges
+  const sb=document.getElementById('sb-badge'); if(sb) sb.textContent=total;
+  const mb=document.getElementById('mob-badge');
+  if(mb){ mb.style.display=total>0?'block':'none'; mb.textContent=total; }
+}
+
+function openAddModal(stage){
+  document.getElementById('add-modal').classList.add('open');
+  if(stage) document.getElementById('m-stage').value=stage;
+}
+function closeAddModal(){ document.getElementById('add-modal').classList.remove('open'); }
+function addApp(){
+  const co=document.getElementById('m-co').value.trim();
+  const role=document.getElementById('m-role').value.trim();
+  if(!co||!role){showToast('Please fill in company and role');return;}
+  const apps=pget('apps')||[];
+  apps.push({company:co,role,stage:document.getElementById('m-stage').value,notes:document.getElementById('m-notes').value,date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})});
+  pset('apps',apps);
+  renderKanban();
+  closeAddModal();
+  ['m-co','m-role','m-notes'].forEach(id=>document.getElementById(id).value='');
+  showToast('Application added ✓');
+}
+
+// ══════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+renderProfiles();
+</script>
+</body>
+</html>
